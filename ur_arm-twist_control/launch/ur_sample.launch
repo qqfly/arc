@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+
+	<param name="/host" type="str" value="192.168.141.40" />
+	<param name="/port" type="int" value="30002" />
+
+  <node pkg="ur_arm" type="ur_arm_node" name="ur_arm" output="screen">
+    <param name="frequency" type="double" value="50" /> <!-- 50 is maximum, starts to jerk/abort stpeedj when frequency is higher -->
+    <!--param name="homing_joint_pos1" type="double" value="-0.0921" />
+    <param name="homing_joint_pos2" type="double" value="-1.68007" />
+    <param name="homing_joint_pos3" type="double" value="2.3832" />
+    <param name="homing_joint_pos4" type="double" value="-3.8498" />
+    <param name="homing_joint_pos5" type="double" value="-1.567" />
+    <param name="homing_joint_pos6" type="double" value="0" /-->
+   </node>
+ 
+</launch>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package>
+  <name>moveit_ur5_interface</name>
+  <version>0.0.1</version>
+  <description>The moveit_ur5_interface package</description>
+
+  <maintainer email="qiu6401@163.com">Qiang Qiu</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>pluginlib</build_depend>
+  <build_depend>interactive_markers</build_depend>
+  <build_depend>moveit_core</build_depend>
+  <build_depend>moveit_ros_planning_interface</build_depend>
+  <build_depend>moveit_ros_robot_interaction</build_depend>
+  <build_depend>moveit_ros_perception</build_depend>
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>descartes_core</build_depend>
+  <build_depend>descartes_moveit</build_depend>
+  <build_depend>descartes_planner</build_depend>
+  <build_depend>descartes_trajectory</build_depend>
+  <build_depend>descartes_utilities</build_depend>
+
+  <run_depend>interactive_markers</run_depend>
+  <run_depend>moveit_core</run_depend>
+  <run_depend>moveit_ros_planning_interface</run_depend>
+  <run_depend>moveit_ros_robot_interaction</run_depend>
+  <run_depend>moveit_ros_perception</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>pluginlib</run_depend>
+  <run_depend>descartes_core</run_depend>
+  <run_depend>descartes_moveit</run_depend>
+  <run_depend>descartes_planner</run_depend>
+  <run_depend>descartes_trajectory</run_depend>
+  <run_depend>descartes_utilities</run_depend>
+
+</package>

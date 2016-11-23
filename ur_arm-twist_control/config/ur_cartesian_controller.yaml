@@ -1,0 +1,28 @@
+## joint_names
+joint_names: [shoulder_pan_joint, shoulder_lift_joint, elbow_joint, wrist_1_joint, wrist_2_joint, wrist_3_joint]
+
+## Cartesian controller
+cartesian_controller:
+  update_rate: 50.0
+
+  # twist controller parameters
+  chain_base_link: base_link
+  chain_tip_link: wrist_3_link
+
+  # damping parameters
+  damping_method: 0  #MANIPULABILITY
+  damping_factor: 0.2
+  lambda0: 0.1
+  wt: 0.005
+  
+  JLA_active: true
+  enforce_limits: true
+  tolerance: 5.0
+
+  # frame_tracker + interactive_marker
+  tracking_frame: ee_target
+  root_frame: world
+  movable_trans: true
+  movable_rot: true
+  pid_trans: {p: 4.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+  pid_rot: {p: 4.0, i: 0.0, d: 0.0, i_clamp: 0.0}

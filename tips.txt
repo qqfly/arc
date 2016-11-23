@@ -1,0 +1,2 @@
+1.写一个node来接收follow_joint_trajectory，与/joint_states，判断动作执行结束。
+2.
