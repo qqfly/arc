@@ -15,9 +15,9 @@ catkin_make
 ## 使用步骤
 ### 仿真
 ```
-roslaunch ur5_moveit_config demo_sim.launch
-rosrun moveit_ur5_interface planning
-参照moveit_ur5_interface/planning/src/planning.cpp写自己的代码，控制机器人
+1. roslaunch ur5_moveit_config demo_sim.launch
+2. rosrun moveit_ur5_interface planning
+3. 参照moveit_ur5_interface/planning/src/planning.cpp写自己的代码，控制机器人
 ```
 ## 真实机器人
 ```
