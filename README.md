@@ -31,4 +31,4 @@ Ubuntu 14.04 STL + ROS indigo + UR5 <br>
 有需要改进的地方可以直接提交一个PR，如果代码未实现，可以先提交观点到tips.txt <br>
 
 我要测试下github放图片功能 <br>
-![logo](https://raw.githubusercontent.com/qqfly/hello-world/master/pic/qrcode_for_gh_e4a5e3dc2cde_258.jpg)
+![logo](https://raw.githubusercontent.com/qqfly/hello-world/master/pic/qrcode_for_gh_e4a5e3dc2cde_258.jpg "我的公众h号")
