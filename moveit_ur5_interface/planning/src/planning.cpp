@@ -60,15 +60,19 @@ using namespace std;
 
 typedef map<int, vector<geometry_msgs::Pose> > C_POSE;
 
-bool executeResult;
+int execute_state;   // 0: fail; 1:success; 2:active
+double goal_threshold_ = 0.01;
+control_msgs::FollowJointTrajectoryFeedbackConstPtr last_trajectory_state_;
 
 bool mPlanning(string movegroup, string refFrame, double target[]);
-
 bool CPlanning(string movegroup, string refFrame, vector<geometry_msgs::Pose> waypoints);
 
-void executeCB(const control_msgs::FollowJointTrajectoryActionResult::ConstPtr& msg);
-
-void executeCB_(const control_msgs::FollowJointTrajectoryActionGoal::ConstPtr& msg);
+void goalCB(JointTractoryActionServer::GoalHandle gh);
+void controllerStateCB(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg);
+void executeCB(const control_msgs::FollowJointTrajectoryActionGoal::ConstPtr& msg);
+bool withinGoalConstraints(
+   const control_msgs::FollowJointTrajectoryFeedbackConstPtr& msg,
+   const trajectory_msgs::JointTrajectory& traj);
 
 int main(int argc, char **argv)
 {
@@ -79,11 +83,38 @@ int main(int argc, char **argv)
 
    ros::NodeHandle nh;
    ros::Rate loop_rate(10);
-   //ros::Subscriber sub = nh.subscribe("joint_trajectory_action/status",1000,executeCB);
-   ros::Subscriber sub = nh.subscribe("follow_joint_trajectory/result",1000,executeCB);
-   ros::Subscriber sub_ = nh.subscribe("follow_joint_trajectory/goal",1000,executeCB_);
+   bool sim = false;
+   char aaa;
+   /*if (!nh.getParam("/move_group/controller_list"),aaa)
+   {
+      ROS_ERROR("heheh");
+   }
+   ROS_ERROR_STREAM("enenen" << aaa);
+   */
+   if (!nh.getParam("/move_group/sim",sim))
+   {
+      ROS_WARN("Cannot load param /move_group/sim");
+   } else {
+      ROS_INFO_STREAM("Param loaded, sim = "<<sim);
+   }
+   ros::Subscriber sub, sub_;
+   if (sim)
+   {
+      ROS_ERROR("heheh");
+      //sub = nh.subscribe("joint_trajectory_action/result",1000,executeCB);
+      sub = nh.subscribe("joint_trajectory_action/goal",1000,executeCB);
+   } else {
+      ROS_ERROR("enenen");
+      //sub = nh.subscribe("follow_joint_trajectory/result",1000,executeCB);
+      sub = nh.subscribe("follow_joint_trajectory/goal",1000,executeCB);
+   }
 
    /* Initial */
+   string movegroup = "manipulator";
+   double target[7];
+   bool result = false;
+   execute_state = 0;
+
    string fpath = ros::package::getPath("moveit_ur5_interface") + "/planning/data/pose.txt";
    ifstream readFile(fpath.c_str());
    double buffer;
@@ -142,12 +173,8 @@ int main(int argc, char **argv)
       cout<<"No."<<i<<"is ["<<pre_pose[0][i].position.x<<", "<<pre_pose[0][i].position.y<<", "<<pre_pose[0][i].position.z<<", "<<pre_pose[0][i].orientation.x<<", "<<pre_pose[0][i].orientation.y<<", "<<pre_pose[0][i].orientation.z<<", "<<pre_pose[0][i].orientation.w<<"]"<<endl;
    }*/
 
-   /* Initial */
 
-   string movegroup = "manipulator";
-   double target[7];
-   bool result = false;
-   executeResult = true;
+   /* Initial */
 
    //min place
    
@@ -155,10 +182,10 @@ int main(int argc, char **argv)
    Jointgroup.setPoseReferenceFrame("base_link");
    Jointgroup.setPlannerId("RRTConnectkConfigDefault");
 
-   executeResult = false;
+   
    Jointgroup.setJointValueTarget(m_joint);
    Jointgroup.move();
-   while (!executeResult)
+   while (execute_state != 1)
    {
       ros::WallDuration(0.5).sleep();
       ROS_INFO("Waiting for executing result!");
@@ -167,12 +194,11 @@ int main(int argc, char **argv)
 
    string refFrame = "base_link";
 
-   executeResult = false;
    do{
       result = CPlanning(movegroup,refFrame,pre_pose[0]);
       ROS_INFO("The result of motion planning is %ld", (long int)result);
    } while(!result);
-   while (!executeResult)
+   while (execute_state != 1)
    {
       ros::WallDuration(0.5).sleep();
       ROS_INFO("Waiting for executing result!");
@@ -182,21 +208,21 @@ int main(int argc, char **argv)
    target_pose.position.y -= 0.1;
    waypoints.clear();
    waypoints.push_back(target_pose);
-   executeResult = false;
+   
    do{
       result = CPlanning(movegroup,refFrame,waypoints);
       ROS_INFO("The result of motion planning is %ld", (long int)result);
    } while(!result);
-   while (!executeResult)
+   while (execute_state != 1)
    {
       ros::WallDuration(0.5).sleep();
       ROS_INFO("Waiting for executing result!");
    }
    ros::WallDuration(3.0).sleep();
 
-   executeResult = false;
+   
    Jointgroup.move();
-   while (!executeResult)
+   while (execute_state != 1)
    {
       ros::WallDuration(0.5).sleep();
       ROS_INFO("Waiting for executing result!");
@@ -282,22 +308,39 @@ bool CPlanning(string movegroup, string refFrame, vector<geometry_msgs::Pose> wa
   return true;
 }
 
-void executeCB(const control_msgs::FollowJointTrajectoryActionResult::ConstPtr& msg)
-{
-   //ROS_INFO("I heard execute result %d", int(msg->status_list.size()));
-   ROS_ERROR("************RETRERER********");
-   if (msg->result.error_code == 0)
-   {
-      executeResult = true;
-   } else {
-      executeResult = false;
-   }
-}
 
-void executeCB_(const control_msgs::FollowJointTrajectoryActionGoal::ConstPtr& msg)
+void executeCB(const control_msgs::FollowJointTrajectoryActionGoal::ConstPtr& msg)
 {
    ROS_ERROR("************GOAL");
-   executeResult = false;  // active
+   execute_state = false;  // active
+}
+
+bool withinGoalConstraints(
+   const control_msgs::FollowJointTrajectoryFeedbackConstPtr& msg,
+   const trajectory_msgs::JointTrajectory& traj)
+{
+   bool rtn = false;
+   if (traj.points.empty())
+   {
+      ROS_WARN("Empty joint trajectory passed to check goal constraints, return false");
+      rtn = false;
+   }
+   else
+   {
+      int last_point = traj.points.size() - 1;
+      if (industrial_robot_client::utils::isWithinRange(
+         last_trajectory_state_->joint_names,
+         last_trajectory_state_->actual.positions, traj.joint_names, 
+         traj.points[last_point].positions, goal_threshold_))
+      {
+         rtn = true;
+      }
+      else
+      {
+         rtn = false;
+      }
+   }
+   return rtn;
 }
 
 

@@ -8,7 +8,7 @@
        - Update with joint names for your robot (in order expected by rbt controller)
        - and uncomment the following line: -->
   <rosparam command="load" file="$(find ur5_moveit_config)/config/joint_names_ur5.yaml"/>
- 
+
   <!-- the "fake_execution" argument controls whether we connect to a Simulated or Real robot -->
   <!--  - if fake_execution=false, a robot_ip arguments is required -->
   <arg name="fake_execution" default="true" />
