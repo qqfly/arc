@@ -12,11 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_ros_robot_interaction
   pluginlib
   cmake_modules
-  descartes_core
-  descartes_moveit
-  descartes_planner
-  descartes_trajectory
-  descartes_utilities
 )
 
 find_package(Boost REQUIRED system filesystem date_time thread)
@@ -92,7 +87,7 @@ find_package(Boost REQUIRED system filesystem date_time thread)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES moveit_mico_interface
-  CATKIN_DEPENDS moveit_core moveit_ros_planning_interface moveit_ros_robot_interaction std_msgs  descartes_core descartes_moveit descartes_planner descartes_trajectory descartes_utilities
+  CATKIN_DEPENDS moveit_core moveit_ros_planning_interface moveit_ros_robot_interaction std_msgs 
 #  DEPENDS system_lib
 )
 find_package(Eigen REQUIRED)
