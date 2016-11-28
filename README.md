@@ -7,7 +7,7 @@ Ubuntu 14.04 STL + ROS indigo + UR5 <br>
 ## Install
 
 ```
-1. git clone git@github.com:qqfly/arc.git -b indigo-devel
+1. git clone https://github.com/qqfly/arc.git -b indigo-devel
 2. rosdep install --from-paths . --ignore-src --rosdistro indigo
 3. catkin_make
 ```
