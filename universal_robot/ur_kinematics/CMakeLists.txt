@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 2.8.3)
 project(ur_kinematics)
 
 find_package(catkin REQUIRED COMPONENTS roscpp geometry_msgs moveit_core
-  moveit_ros_planning moveit_kinematics pluginlib tf_conversions)
+  moveit_ros_planning pluginlib tf_conversions)
 
 find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ur3_kin ur5_kin ur10_kin ur3_moveit_plugin ur5_moveit_plugin ur10_moveit_plugin
-  CATKIN_DEPENDS roscpp geometry_msgs moveit_core moveit_ros_planning moveit_kinematics
+  CATKIN_DEPENDS roscpp geometry_msgs moveit_core moveit_ros_planning
     pluginlib tf_conversions
   DEPENDS boost
 )
